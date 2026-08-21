@@ -630,6 +630,7 @@
   <div class="tab" data-tab="leaderboard">Reyting</div>
   <div class="tab" data-tab="teachers">O'qituvchilar</div>
   <div class="tab" data-tab="graduates">Bitiruvchilar</div>
+  <div class="tab" data-tab="new-students">Yangi o'quvchilar</div>
 </div>
 
 <main>
@@ -666,6 +667,20 @@
       </table>
     </div>
     <div id="graduates-empty" class="empty graduates-empty" style="display:none;">O'quvchi topilmadi.</div>
+  </section>
+
+  <section class="panel" id="panel-new-students">
+    <p class="section-label">Yangi o'quvchilar ro'yxati</p>
+    <div class="graduates-search-wrap">
+      <input id="new-students-search" class="graduates-search" type="search" placeholder="O'quvchini qidirish..." autocomplete="off">
+    </div>
+    <div class="graduates-table-wrap">
+      <table class="graduates-table">
+        <thead><tr><th>№</th><th>Ism familiya</th></tr></thead>
+        <tbody id="new-students-list"></tbody>
+      </table>
+    </div>
+    <div id="new-students-empty" class="empty graduates-empty" style="display:none;">O'quvchi topilmadi.</div>
   </section>
 </main>
 
@@ -764,6 +779,16 @@
     {name:"XOLMUROTOV JASURBEK", math:"C", physics:"B"},
     {name:"XUDOYBERDIYEVA NAIMA", math:"C+", physics:"B"},
     {name:"YUSUPOVA SABRINA", math:"C+", physics:"B"}
+  ];
+
+  // Yangi o'quvchilar ro'yxati
+  const NEW_STUDENTS = [
+    "Rustamov Arslon", "Zokirova Dilnura", "Xayrullayev Sanjarbek", "Jumaqulov Amirbek",
+    "Narzullaev Kamronbek", "Bozorov Shohjahon", "Nutfilloyev Javohir", "Ismatova Sarvinoz",
+    "Murodov Asilbek", "Hazratqulova Gulsanam", "Axmedov Navro'zbek", "Xudayberdiyev Azizbek",
+    "Himmatov Shohruzbek", "Otaqulov Azizbek", "Olimov Oybek", "Hamroqulov Dilshodbek",
+    "Oltinov E'zozbek", "Rashidova Nigina", "Abdullayev Bobirjon", "G'ulomjonov Shamshod",
+    "Narzullaev Jahongir", "Maxkamov Nazarbek", "Choriyev Davrbek", "Mastonova Ruxshona"
   ];
 
   // Har bir o'qituvchi: ismi, faniy, qisqacha malumot va yutuqlari
@@ -883,6 +908,20 @@
   const graduatesSearch = document.getElementById('graduates-search');
   graduatesSearch.addEventListener('input', ()=>renderGraduates(graduatesSearch.value));
 
+  function renderNewStudents(query=''){
+    const list = document.getElementById('new-students-list');
+    const empty = document.getElementById('new-students-empty');
+    const q = query.trim().toLowerCase();
+    const filtered = NEW_STUDENTS.filter(name => name.toLowerCase().includes(q));
+    list.innerHTML = filtered.map((name, i) => `
+      <tr><td>${i + 1}</td><td class="graduate-name">${name}</td></tr>
+    `).join('');
+    empty.style.display = filtered.length ? 'none' : 'block';
+  }
+
+  const newStudentsSearch = document.getElementById('new-students-search');
+  newStudentsSearch.addEventListener('input', ()=>renderNewStudents(newStudentsSearch.value));
+
   function renderTeachers(){
     const list = document.getElementById('teachers-list');
     if(!TEACHERS.length){
@@ -973,6 +1012,7 @@
   renderLeaderboard();
   renderTeachers();
   renderGraduates();
+  renderNewStudents();
 
   // ====== Telegram WebApp integratsiyasi ======
   if(window.Telegram && window.Telegram.WebApp){
@@ -981,5 +1021,5 @@
     tg.expand();
   }
 </script>
-</body>
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a2e7f34c288feece',t:'MTc4NzI5NzYxNA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
