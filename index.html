@@ -559,7 +559,7 @@ input:focus,
         radial-gradient(ellipse at 85% 70%,rgba(120,195,190,.10),transparent 28%);
       filter:blur(25px);
     }
-  .panel{display:none;}
+  .panel{display:none; contain:layout style;}
   .panel.active{display:block; animation:iosPanelIn .38s cubic-bezier(.22,.8,.25,1) both; will-change:transform,opacity;}
   .panel.active.from-right{animation-name:iosPanelFromRight;}
   .panel.active.from-left{animation-name:iosPanelFromLeft;}
@@ -1457,33 +1457,52 @@ input:focus,
   });
 
   // iOS-uslubidagi shaffof, yon tomonga siljib almashadigan bo'limlar
-  document.querySelectorAll('.tab').forEach((tab, newIndex)=>{
+  const allTabs = [...document.querySelectorAll('.tab')];
+  const allPanels = [...document.querySelectorAll('.panel')];
+
+  allTabs.forEach((tab, newIndex)=>{
     tab.addEventListener('click', ()=>{
       const activeTab = document.querySelector('.tab.active');
-      const oldIndex = [...document.querySelectorAll('.tab')].indexOf(activeTab);
+      const oldIndex = allTabs.indexOf(activeTab);
       if(oldIndex === newIndex) return;
 
-      document.querySelectorAll('.tab').forEach(t=>{
-        t.classList.remove('active', 'liquid-switch');
-      });
-      document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active', 'from-right', 'from-left'));
-      tab.classList.add('active', 'liquid-switch');
+      /* 1-qadam: darhol, arzon o'zgarish — buyruqning o'zi faollashadi,
+         shu bilan bosish zahoti ko'zga tezkor javob beradi. */
+      allTabs.forEach(t=> t.classList.remove('active', 'liquid-switch'));
+      tab.classList.add('active');
 
-      /* Animatsiyani har bosishda qayta ishga tushirish */
-      void tab.offsetWidth;
-      const nextPanel = document.getElementById('panel-' + tab.dataset.tab);
-      nextPanel.classList.add('active', newIndex > oldIndex ? 'from-right' : 'from-left');
-      nextPanel.addEventListener('animationend', function clearWillChange(){
-        nextPanel.style.willChange = 'auto';
-        nextPanel.removeEventListener('animationend', clearWillChange);
-      }, {once:true});
       if(window.Telegram?.WebApp?.HapticFeedback){
         window.Telegram.WebApp.HapticFeedback.selectionChanged();
       }
 
-      window.setTimeout(()=>{
-        tab.classList.remove('liquid-switch');
-      }, 900);
+      /* 2-qadam: og'ir ish (panelni almashtirish, ichidagi shaffof
+         qatlamlarni qayta chizish) keyingi animatsiya freymiga
+         qoldiriladi. Avvalgi versiyada bularning barchasi (shu jumladan
+         animatsiyani qayta ishga tushirish uchun "void tab.offsetWidth"
+         orqali MAJBURIY sinxron reflow) bitta freym ichida, bosish
+         hodisasi bilan bir vaqtda bajarilardi — aynan shu "bitta og'ir
+         freym" telefonda sezilarli qotishga sabab bo'lardi. Ishni ikki
+         freymga bo'lib yuborish orqali brauzer avval bosishning o'zini
+         chizib ulguradi, so'ng og'ir qismni bajaradi. */
+      requestAnimationFrame(()=>{
+        allPanels.forEach(p=>p.classList.remove('active', 'from-right', 'from-left'));
+        const nextPanel = document.getElementById('panel-' + tab.dataset.tab);
+        nextPanel.classList.add('active', newIndex > oldIndex ? 'from-right' : 'from-left');
+        nextPanel.addEventListener('animationend', function clearWillChange(){
+          nextPanel.style.willChange = 'auto';
+          nextPanel.removeEventListener('animationend', clearWillChange);
+        }, {once:true});
+
+        /* 3-qadam: "suyuqlik" effekti (liquid-switch) navbatdagi freymda
+           qo'shiladi — shu tarzda uning CSS animatsiyasi majburiy
+           reflow'siz, tabiiy ravishda qayta boshlanadi. */
+        requestAnimationFrame(()=>{
+          tab.classList.add('liquid-switch');
+          window.setTimeout(()=>{
+            tab.classList.remove('liquid-switch');
+          }, 900);
+        });
+      });
     });
   });
 
