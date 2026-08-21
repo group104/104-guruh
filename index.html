@@ -30,7 +30,11 @@ body{
     var(--paper, #f6f2e9);
 }
 
-/* Barcha asosiy yuzalar uchun shaffof material */
+/* Barcha asosiy yuzalar uchun shaffof material
+   Eslatma: .row/.brow/.teacher-card/.achievement-card/.stat-card
+   ataylab shu ro'yxatdan chiqarildi — ro'yxatda o'nlab element bo'lgani
+   uchun har biriga alohida blur qo'yish telefonlarda (ayniqsa Telegram
+   ilova-ichi brauzerida) sahifani "qotirib" qo'yardi. */
 .masthead,
 .tabs,
 .panel,
@@ -39,12 +43,7 @@ body{
 .graduates-table-wrap,
 .graduates-search-wrap,
 .modal-sheet,
-.empty,
-.row,
-.brow,
-.teacher-card,
-.achievement-card,
-.stat-card{
+.empty{
   -webkit-backdrop-filter:blur(24px) saturate(145%);
   backdrop-filter:blur(24px) saturate(145%);
 }
@@ -144,7 +143,7 @@ body{
 .achievement-card,
 .stat-card{
   background:
-    linear-gradient(135deg,rgba(255,255,255,.42),rgba(255,255,255,.17));
+    linear-gradient(135deg,rgba(255,255,255,.62),rgba(255,255,255,.38));
   border:1px solid rgba(255,255,255,.45);
   box-shadow:
     0 6px 20px rgba(30,42,68,.06),
@@ -162,7 +161,7 @@ body{
 .stat-card:hover{
   transform:translateY(-2px) scale(1.008);
   background:
-    linear-gradient(135deg,rgba(255,255,255,.56),rgba(255,255,255,.23));
+    linear-gradient(135deg,rgba(255,255,255,.74),rgba(255,255,255,.46));
   box-shadow:
     0 12px 28px rgba(30,42,68,.09),
     inset 0 1px 0 rgba(255,255,255,.84);
@@ -268,6 +267,31 @@ input:focus,
   }
   *{box-sizing:border-box;}
   html,body{margin:0;padding:0;}
+  /* Telefonda (ayniqsa Telegram bot ichidagi brauzerda) bosilganda
+     chiqadigan ko'k to'rtburchak (default tap-highlight)ni o'chirish */
+  *{
+    -webkit-tap-highlight-color:transparent;
+    tap-highlight-color:transparent;
+  }
+  .tab,
+  .teacher-row,
+  .row,
+  .brow,
+  .crest,
+  .contact-hint,
+  button,
+  a,
+  [onclick]{
+    -webkit-tap-highlight-color:transparent;
+    touch-action:manipulation;
+    outline:none;
+  }
+  .tab:focus,
+  .tab:focus-visible,
+  .teacher-row:focus,
+  .teacher-row:focus-visible{
+    outline:none;
+  }
   body{
     background:var(--paper);
     color:var(--ink);
