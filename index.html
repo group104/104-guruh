@@ -31,13 +31,14 @@ body{
 }
 
 /* Barcha asosiy yuzalar uchun shaffof material
-   Eslatma: .row/.brow/.teacher-card/.achievement-card/.stat-card
-   ataylab shu ro'yxatdan chiqarildi — ro'yxatda o'nlab element bo'lgani
-   uchun har biriga alohida blur qo'yish telefonlarda (ayniqsa Telegram
-   ilova-ichi brauzerida) sahifani "qotirib" qo'yardi. */
+   Eslatma: .panel bu yerdan ataylab chiqarildi — u buyruq (tab)
+   almashganda animatsiya bilan qayta chizib turadigan asosiy konteyner,
+   shu sabab unga blur qo'yish har safar sezilarli "qotishga" olib
+   kelardi. Ichidagi .register/.board/.graduates-table-wrap va h.k.
+   allaqachon o'zining shaffof foniga ega, shuning uchun .panel'ga
+   alohida blur shart emas. */
 .masthead,
 .tabs,
-.panel,
 .register,
 .board,
 .graduates-table-wrap,
@@ -559,12 +560,12 @@ input:focus,
       filter:blur(25px);
     }
   .panel{display:none;}
-  .panel.active{display:block; animation:iosPanelIn .38s cubic-bezier(.22,.8,.25,1) both;}
+  .panel.active{display:block; animation:iosPanelIn .38s cubic-bezier(.22,.8,.25,1) both; will-change:transform,opacity;}
   .panel.active.from-right{animation-name:iosPanelFromRight;}
   .panel.active.from-left{animation-name:iosPanelFromLeft;}
-  @keyframes iosPanelIn{from{opacity:0; transform:translateY(8px) scale(.985); filter:blur(3px)} to{opacity:1; transform:translateY(0) scale(1); filter:blur(0)}}
-  @keyframes iosPanelFromRight{from{opacity:0; transform:translateX(18px) scale(.985); filter:blur(3px)} to{opacity:1; transform:translateX(0) scale(1); filter:blur(0)}}
-  @keyframes iosPanelFromLeft{from{opacity:0; transform:translateX(-18px) scale(.985); filter:blur(3px)} to{opacity:1; transform:translateX(0) scale(1); filter:blur(0)}}
+  @keyframes iosPanelIn{from{opacity:0; transform:translateY(8px) scale(.985)} to{opacity:1; transform:translateY(0) scale(1)}}
+  @keyframes iosPanelFromRight{from{opacity:0; transform:translateX(18px) scale(.985)} to{opacity:1; transform:translateX(0) scale(1)}}
+  @keyframes iosPanelFromLeft{from{opacity:0; transform:translateX(-18px) scale(.985)} to{opacity:1; transform:translateX(0) scale(1)}}
 
   .section-label{
     font-family:'Fraunces',serif;
@@ -1472,6 +1473,10 @@ input:focus,
       void tab.offsetWidth;
       const nextPanel = document.getElementById('panel-' + tab.dataset.tab);
       nextPanel.classList.add('active', newIndex > oldIndex ? 'from-right' : 'from-left');
+      nextPanel.addEventListener('animationend', function clearWillChange(){
+        nextPanel.style.willChange = 'auto';
+        nextPanel.removeEventListener('animationend', clearWillChange);
+      }, {once:true});
       if(window.Telegram?.WebApp?.HapticFeedback){
         window.Telegram.WebApp.HapticFeedback.selectionChanged();
       }
